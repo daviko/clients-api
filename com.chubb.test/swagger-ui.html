@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swagger UI - Client Management API</title>
+  <style>
+    :root {
+      --green: #49a56b;
+      --green-dark: #267346;
+      --blue: #4990c7;
+      --orange: #d58b32;
+      --red: #c65353;
+      --ink: #3b4151;
+      --muted: #687386;
+      --line: #d9dfe7;
+      --bg: #fafafa;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 Arial, Helvetica, sans-serif; }
+    a { color: #4990c7; text-decoration: none; }
+    .topbar { height: 8px; background: #89bf3f; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 22px 60px; }
+    .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    h1 { font-size: 34px; line-height: 1.15; margin: 0 0 8px; font-weight: 600; color: #3b4151; }
+    .version { font-size: 12px; color: #fff; background: #7d8492; border-radius: 3px; padding: 3px 7px; vertical-align: middle; }
+    .subtitle { color: var(--muted); font-size: 15px; }
+    .server { display: flex; align-items: center; gap: 8px; margin: 18px 0 28px; }
+    .server label { font-weight: 700; }
+    select { border: 1px solid #b9c1cc; border-radius: 4px; padding: 8px 10px; background: white; color: var(--ink); min-width: 280px; }
+    .tag { border-bottom: 1px solid var(--line); margin: 24px 0 12px; padding-bottom: 12px; }
+    .tag h2 { font-size: 24px; margin: 0 0 4px; font-weight: 600; }
+    .tag p { color: var(--muted); margin: 0; }
+    .endpoint { border: 1px solid; border-radius: 4px; margin: 10px 0; overflow: hidden; background: rgba(255,255,255,.7); }
+    .endpoint.get { border-color: #61affe; background: rgba(97,175,254,.08); }
+    .endpoint.post { border-color: #49cc90; background: rgba(73,204,144,.08); }
+    .endpoint.delete { border-color: #f93e3e; background: rgba(249,62,62,.06); }
+    .summary { display: grid; grid-template-columns: 86px minmax(180px, 1fr) minmax(180px, 1fr) 24px; align-items: center; gap: 12px; padding: 11px 14px; cursor: pointer; }
+    .method { color: white; font-weight: 700; text-align: center; border-radius: 3px; padding: 7px 5px; font-size: 13px; }
+    .get .method { background: #61affe; }
+    .post .method { background: #49cc90; }
+    .delete .method { background: #f93e3e; }
+    code, pre { font-family: Consolas, Monaco, monospace; }
+    .path { font-size: 16px; font-weight: 700; color: #3b4151; }
+    .short { color: #3b4151; }
+    .chevron { font-size: 18px; color: #687386; text-align: right; }
+    .details { display: none; background: rgba(255,255,255,.88); border-top: 1px solid rgba(0,0,0,.08); padding: 18px; }
+    .endpoint.open .details { display: block; }
+    .endpoint.open .chevron { transform: rotate(90deg); }
+    h3 { font-size: 16px; margin: 14px 0 8px; }
+    .details h3:first-child { margin-top: 0; }
+    .description { margin: 0 0 16px; color: #3b4151; }
+    .pill { display: inline-block; padding: 3px 7px; border-radius: 3px; background: #eef1f5; color: #4b5565; font-size: 12px; margin-left: 6px; }
+    table { border-collapse: collapse; width: 100%; margin: 8px 0 16px; background: white; }
+    th, td { border-bottom: 1px solid #e4e8ee; text-align: left; padding: 10px; vertical-align: top; }
+    th { color: #596273; font-size: 12px; text-transform: uppercase; background: #f5f7f9; }
+    .status { display: inline-block; min-width: 42px; text-align: center; border-radius: 3px; padding: 3px 6px; color: white; font-weight: 700; font-size: 12px; }
+    .s200 { background: #49a56b; } .s204 { background: #49a56b; } .s400 { background: #d58b32; } .s404 { background: #d58b32; } .s500 { background: #c65353; }
+    pre { white-space: pre-wrap; background: #f5f7f9; border: 1px solid #e1e5eb; border-radius: 4px; padding: 12px; overflow-x: auto; color: #3b4151; }
+    .try { border: 1px solid #4990c7; color: #367eae; background: white; padding: 7px 12px; border-radius: 4px; cursor: pointer; font-weight: 700; }
+    .try:hover { background: #eef7fd; }
+    .notice { margin-top: 24px; border-left: 4px solid #d58b32; background: #fff8eb; padding: 12px 14px; color: #654d2d; }
+    .footer { margin-top: 35px; color: #8a929e; font-size: 12px; text-align: center; }
+    @media (max-width: 680px) {
+      .header { display: block; } .summary { grid-template-columns: 70px 1fr 20px; }
+      .summary .short { grid-column: 2 / 3; } .server { align-items: flex-start; flex-direction: column; }
+      select { min-width: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar"></div>
+  <main class="wrap">
+    <div class="header">
+      <div>
+        <h1>Client Management API <span class="version">1.0</span></h1>
+        <div class="subtitle">API for managing client information</div>
+      </div>
+      <div><a href="#endpoints">OpenAPI 3.0</a></div>
+    </div>
+
+    <div class="server">
+      <label for="server">Servers</label>
+      <select id="server">
+        <option>http://localhost:8080 - Local development server</option>
+      </select>
+    </div>
+
+    <section id="endpoints">
+      <div class="tag">
+        <h2>Client Management</h2>
+        <p>API for managing client information</p>
+      </div>
+
+      <article class="endpoint get open">
+        <div class="summary" role="button" tabindex="0" aria-expanded="true">
+          <span class="method">GET</span>
+          <code class="path">/api/clients</code>
+          <span class="short">Get all clients</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="details">
+          <p class="description">Retrieves a list containing all registered clients.</p>
+          <h3>Responses</h3>
+          <table>
+            <thead><tr><th>Code</th><th>Description</th><th>Media type</th></tr></thead>
+            <tbody>
+              <tr><td><span class="status s200">200</span></td><td>Clients successfully retrieved</td><td><code>application/json</code></td></tr>
+              <tr><td><span class="status s500">500</span></td><td>Internal server error</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <h3>Example response</h3>
+          <pre>[
+  {
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Smith",
+    "surname": "Johnson",
+    "phone": "+1234567890"
+  }
+]</pre>
+          <button class="try" onclick="demo('GET /api/clients')">Try it out (demo)</button>
+        </div>
+      </article>
+
+      <article class="endpoint post">
+        <div class="summary" role="button" tabindex="0" aria-expanded="false">
+          <span class="method">POST</span>
+          <code class="path">/api/client</code>
+          <span class="short">Save a new client</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="details">
+          <p class="description">Registers a new client using the information provided in the request body.</p>
+          <h3>Request body <span class="pill">required</span></h3>
+          <p>Client information to be registered. Content type: <code>application/json</code></p>
+          <pre>{
+  "firstName": "John",
+  "lastName": "Smith",
+  "surname": "Johnson",
+  "phone": "+1234567890"
+}</pre>
+          <h3>Responses</h3>
+          <table>
+            <thead><tr><th>Code</th><th>Description</th><th>Media type</th></tr></thead>
+            <tbody>
+              <tr><td><span class="status s200">200</span></td><td>Client successfully saved</td><td><code>application/json</code></td></tr>
+              <tr><td><span class="status s400">400</span></td><td>Invalid client information</td><td>—</td></tr>
+              <tr><td><span class="status s500">500</span></td><td>Internal server error</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <h3>Example response</h3>
+          <pre>{
+  "success": true,
+  "message": "Client saved with success"
+}</pre>
+          <button class="try" onclick="demo('POST /api/client')">Try it out (demo)</button>
+        </div>
+      </article>
+
+      <article class="endpoint delete">
+        <div class="summary" role="button" tabindex="0" aria-expanded="false">
+          <span class="method">DELETE</span>
+          <code class="path">/api/client/{idClient}</code>
+          <span class="short">Delete a client by id</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="details">
+          <p class="description">Deletes a client using its id.</p>
+          <h3>Parameters</h3>
+          <table>
+            <thead><tr><th>Name</th><th>Description</th><th>Required</th><th>Schema</th></tr></thead>
+            <tbody><tr><td><code>idClient</code></td><td>Client's identifier <span class="pill">path</span></td><td>Yes</td><td>integer</td></tr></tbody>
+          </table>
+          <h3>Responses</h3>
+          <table>
+            <thead><tr><th>Code</th><th>Description</th><th>Media type</th></tr></thead>
+            <tbody>
+              <tr><td><span class="status s204">204</span></td><td>Client successfully deleted. No response body.</td><td>—</td></tr>
+              <tr><td><span class="status s404">404</span></td><td>Client not found</td><td><code>application/json</code></td></tr>
+              <tr><td><span class="status s500">500</span></td><td>Internal server error</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <h3>Example 404 response</h3>
+          <pre>{
+  "success": false,
+  "message": "Client with id: [1] not found"
+}</pre>
+          <button class="try" onclick="demo('DELETE /api/client/1')">Try it out (demo)</button>
+        </div>
+      </article>
+    </section>
+
+    <div class="notice">
+      <strong>Illustrative mockup:</strong> This is a static HTML simulation of the Swagger UI layout, not the actual OpenAPI-generated page. The demo buttons do not send HTTP requests.
+      <br><br>
+      <strong>Controller mapping note:</strong> Your current code shows <code>@DeleteMapping("/client")</code> together with <code>@PathVariable int idClient</code>. To expose the documented route, change it to <code>@DeleteMapping("/client/{idClient}")</code>.
+    </div>
+    <div class="footer">Swagger UI-style example · Client Management API · Local development</div>
+  </main>
+  <script>
+    document.querySelectorAll('.summary').forEach(function (summary) {
+      function toggle() {
+        const card = summary.closest('.endpoint');
+        card.classList.toggle('open');
+        summary.setAttribute('aria-expanded', card.classList.contains('open'));
+      }
+      summary.addEventListener('click', toggle);
+      summary.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggle();
+        }
+      });
+    });
+    function demo(endpoint) {
+      alert('Mock Swagger UI preview\\n\\n' + endpoint + '\\n\\nThis HTML file is a visual simulation only. Run your Spring Boot application to execute the real endpoint.');
+    }
+  </script>
+</body>
+</html>
